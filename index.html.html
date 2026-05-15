@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>9-Box Leadership Grid</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --brand-purple: #652E63;
+    --brand-orange: #E87722;
+    --brand-yellow: #A8AD00;
+    --brand-blue:   #6F7F95;
+    --brand-coral:  #E0836B;
+    --brand-brown:  #A16449;
+    --chip-colors: #652E63, #E87722, #A8AD00, #6F7F95, #E0836B, #A16449;
+    --bg: #f4f2ef;
+    --surface: #ffffff;
+    --text: #1a1a1a;
+    --text-muted: #666;
+    --border: rgba(0,0,0,0.1);
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 24px;
+  }
+
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+
+  header h1 {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--brand-purple);
+    letter-spacing: -0.02em;
+  }
+
+  header p {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+
+  .reset-btn {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    padding: 6px 14px;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    background: var(--surface);
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+  }
+  .reset-btn:hover { background: var(--brand-purple); color: #fff; border-color: var(--brand-purple); }
+
+  .layout { display: flex; gap: 16px; align-items: flex-start; }
+
+  /* Sidebar */
+  .sidebar {
+    width: 170px;
+    flex-shrink: 0;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px;
+    position: sticky;
+    top: 24px;
+  }
+
+  .sidebar-title {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  #sidebar-chips { display: flex; flex-direction: column; gap: 5px; }
+
+  .unplace-zone {
+    margin-top: 10px;
+    padding: 8px;
+    border: 1.5px dashed var(--border);
+    border-radius: 8px;
+    text-align: center;
+    font-size: 10px;
+    color: var(--text-muted);
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .unplace-zone.drag-over { border-color: var(--brand-purple); background: #f9f2f9; }
+
+  /* Chip */
+  .chip {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 3px 8px 3px 3px;
+    cursor: grab;
+    user-select: none;
+    font-size: 11px;
+    color: var(--text);
+    transition: box-shadow 0.15s, transform 0.1s;
+  }
+  .chip:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.12); transform: translateY(-1px); }
+  .chip:active { cursor: grabbing; }
+  .chip.dragging { opacity: 0.35; transform: scale(0.96); }
+
+  .avatar {
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 8px; font-weight: 600;
+    color: #fff;
+    overflow: hidden;
+    text-transform: uppercase;
+  }
+  .avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+
+  /* Grid wrapper */
+  .grid-wrapper { flex: 1; display: flex; flex-direction: column; }
+
+  .axis-row { display: flex; gap: 0; flex: 1; }
+
+  .y-label {
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-muted);
+    display: flex; align-items: center; justify-content: center;
+    padding: 0 6px;
+    min-width: 28px;
+    letter-spacing: 0.02em;
+  }
+
+  .grid-col { flex: 1; display: flex; flex-direction: column; }
+
+  .nine-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    gap: 4px;
+    flex: 1;
+    min-height: 570px;
+  }
+
+  .box {
+    border-radius: 8px;
+    padding: 10px 8px 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    transition: outline 0.12s;
+    min-height: 185px;
+    position: relative;
+  }
+  .box.drag-over { outline: 2px dashed rgba(101,46,99,0.6); outline-offset: -2px; }
+
+  .box-label {
+    font-size: 10px;
+    font-weight: 600;
+    line-height: 1.4;
+    text-align: center;
+    padding-bottom: 6px;
+    border-bottom: 1px solid rgba(0,0,0,0.08);
+    margin-bottom: 2px;
+  }
+
+  .box-chips { display: flex; flex-wrap: wrap; gap: 3px; flex: 1; align-content: flex-start; }
+
+  .box .chip { font-size: 10px; padding: 2px 6px 2px 2px; border-color: rgba(0,0,0,0.1); }
+  .box .chip .avatar { width: 20px; height: 20px; font-size: 7px; }
+  .box .chip:hover { box-shadow: 0 2px 6px rgba(0,0,0,0.15); }
+
+  .x-label {
+    text-align: center;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-muted);
+    padding: 10px 0 0;
+    letter-spacing: 0.02em;
+  }
+
+  /* Box colors — matching original */
+  .box-0 { background: #f5e6c8; }  /* High / Poor */
+  .box-1 { background: #f2c4c4; }  /* High / Good */
+  .box-2 { background: #c97a7a; }  /* High / Outstanding */
+  .box-3 { background: #b8d4b0; }  /* Mod / Poor */
+  .box-4 { background: #f5e6c8; }  /* Mod / Good */
+  .box-5 { background: #c97a7a; }  /* Mod / Outstanding */
+  .box-6 { background: #6f9e8a; }  /* Lim / Poor */
+  .box-7 { background: #b8d4b0; }  /* Lim / Good */
+  .box-8 { background: #f5e6c8; }  /* Lim / Outstanding */
+
+  .box-0 .box-label, .box-1 .box-label, .box-3 .box-label, .box-4 .box-label,
+  .box-7 .box-label, .box-8 .box-label { color: #4a3010; }
+  .box-2 .box-label, .box-5 .box-label, .box-6 .box-label { color: #fff; }
+
+  /* Tooltip for double-click hint */
+  .hint {
+    font-size: 10px;
+    color: var(--text-muted);
+    text-align: center;
+    margin-top: 6px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>9-Box Leadership Grid</h1>
+    <p>Drag employees into boxes &nbsp;·&nbsp; Double-click to return to sidebar</p>
+  </div>
+  <button class="reset-btn" onclick="resetAll()">↺ Reset all</button>
+</header>
+
+<div class="layout">
+  <div class="sidebar">
+    <div class="sidebar-title">Employees</div>
+    <div id="sidebar-chips"></div>
+    <div class="unplace-zone" id="unplace-zone">↩ drag here to unplace</div>
+  </div>
+
+  <div class="grid-wrapper">
+    <div class="axis-row">
+      <div class="y-label">Leadership Potential ↑</div>
+      <div class="grid-col">
+        <div class="nine-grid" id="nine-grid"></div>
+        <div class="x-label">Performance →</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const employees = [
+  "Twylla Dillion","Brenda Reyes","Janessa Mondestin","Stephanie Garcia",
+  "Tiwani Oseni","Amaya Woodley","Earl McFarland","Jessica Lumpkin",
+  "Rebecca Lesperance","Mariana Anguiano Orta","Shontei Hampton",
+  "Tasheea Nicholson","Precious Ikejiaku","Tamiya Griffin",
+  "Breana Turner","Valentina Lara-Sanchez"
+];
+
+const chipColors = ["#652E63","#E87722","#A8AD00","#6F7F95","#E0836B","#A16449"];
+
+const boxes = [
+  { label: "High Potential · Poor Performance" },
+  { label: "High Potential · Good Performance" },
+  { label: "High Potential · Outstanding Performance" },
+  { label: "Moderate Potential · Poor Performance" },
+  { label: "Moderate Potential · Good Performance" },
+  { label: "Moderate Potential · Outstanding Performance" },
+  { label: "Limited Potential · Poor Performance" },
+  { label: "Limited Potential · Good Performance" },
+  { label: "Limited Potential · Outstanding Performance" },
+];
+
+// Photo map — add photo URLs here: { "First Last": "https://..." }
+const photos = {};
+
+function initials(name) {
+  const p = name.trim().split(" ");
+  return (p[0][0] + p[p.length-1][0]).toUpperCase();
+}
+
+function colorFor(name) {
+  let h = 0;
+  for (let c of name) h = (h * 31 + c.charCodeAt(0)) & 0xffff;
+  return chipColors[h % chipColors.length];
+}
+
+function makeChip(name, full) {
+  const chip = document.createElement("div");
+  chip.className = "chip";
+  chip.draggable = true;
+  chip.dataset.name = name;
+
+  const av = document.createElement("div");
+  av.className = "avatar";
+  av.style.background = colorFor(name);
+
+  if (photos[name]) {
+    const img = document.createElement("img");
+    img.src = photos[name];
+    img.alt = name;
+    av.appendChild(img);
+  } else {
+    av.textContent = initials(name);
+  }
+
+  const nm = document.createElement("span");
+  nm.textContent = full ? name : name.split(" ")[0];
+  nm.title = name;
+
+  chip.appendChild(av);
+  chip.appendChild(nm);
+
+  chip.addEventListener("dragstart", e => {
+    e.dataTransfer.setData("text/plain", name);
+    chip.classList.add("dragging");
+  });
+  chip.addEventListener("dragend", () => chip.classList.remove("dragging"));
+  return chip;
+}
+
+function removeChipEverywhere(name) {
+  document.querySelectorAll(`.chip[data-name="${CSS.escape(name)}"]`).forEach(c => c.remove());
+}
+
+function returnToSidebar(name) {
+  removeChipEverywhere(name);
+  document.getElementById("sidebar-chips").appendChild(makeChip(name, true));
+}
+
+function placeInBox(name, chipsEl) {
+  removeChipEverywhere(name);
+  const chip = makeChip(name, false);
+  chip.addEventListener("dblclick", () => returnToSidebar(name));
+  chipsEl.appendChild(chip);
+}
+
+function buildSidebar() {
+  const c = document.getElementById("sidebar-chips");
+  c.innerHTML = "";
+  employees.forEach(name => c.appendChild(makeChip(name, true)));
+}
+
+function buildGrid() {
+  const grid = document.getElementById("nine-grid");
+  grid.innerHTML = "";
+  boxes.forEach((b, i) => {
+    const box = document.createElement("div");
+    box.className = `box box-${i}`;
+
+    const label = document.createElement("div");
+    label.className = "box-label";
+    label.textContent = b.label;
+
+    const chips = document.createElement("div");
+    chips.className = "box-chips";
+
+    box.appendChild(label);
+    box.appendChild(chips);
+
+    box.addEventListener("dragover", e => { e.preventDefault(); box.classList.add("drag-over"); });
+    box.addEventListener("dragleave", () => box.classList.remove("drag-over"));
+    box.addEventListener("drop", e => {
+      e.preventDefault();
+      box.classList.remove("drag-over");
+      placeInBox(e.dataTransfer.getData("text/plain"), chips);
+    });
+
+    grid.appendChild(box);
+  });
+}
+
+function resetAll() {
+  buildGrid();
+  buildSidebar();
+}
+
+const unplace = document.getElementById("unplace-zone");
+unplace.addEventListener("dragover", e => { e.preventDefault(); unplace.classList.add("drag-over"); });
+unplace.addEventListener("dragleave", () => unplace.classList.remove("drag-over"));
+unplace.addEventListener("drop", e => {
+  e.preventDefault();
+  unplace.classList.remove("drag-over");
+  returnToSidebar(e.dataTransfer.getData("text/plain"));
+});
+
+buildGrid();
+buildSidebar();
+</script>
+</body>
+</html>
