@@ -251,7 +251,7 @@ function positionAxis() {
 
   // Corner point = left edge of grid, bottom edge of grid (relative to SVG)
   const cornerX = rect.left - svgRect.left;
-  const cornerY = rect.bottom - svgRect.top;
+  const cornerY = rect.bottom - svgRect.top + 10;
   const topY = rect.top - svgRect.top;
   const rightX = rect.right - svgRect.left;
 
