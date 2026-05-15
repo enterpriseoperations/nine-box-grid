@@ -67,9 +67,6 @@
     justify-content: center; font-size: 8px; font-weight: 600; color: #fff; overflow: hidden; text-transform: uppercase;
   }
   .avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
-
-  /* Grid area */
-  .grid-wrapper { flex: 1; }
   .nine-grid {
     display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr);
     gap: 4px; min-height: 570px;
@@ -89,7 +86,6 @@
   .box-6 { background: #6f9e8a; } .box-7 { background: #b8d4b0; } .box-8 { background: #f5e6c8; }
   .box-0 .box-label,.box-1 .box-label,.box-3 .box-label,.box-4 .box-label,.box-7 .box-label,.box-8 .box-label { color: #4a3010; }
   .box-2 .box-label,.box-5 .box-label,.box-6 .box-label { color: #fff; }
-
   .modal-bg { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 100; align-items: center; justify-content: center; }
   .modal-bg.open { display: flex; }
   .modal { background: var(--surface); border-radius: 12px; padding: 24px; width: 320px; box-shadow: 0 8px 32px rgba(0,0,0,0.18); }
@@ -119,42 +115,35 @@
     <div class="unplace-zone" id="unplace-zone">↩ drag here to unplace</div>
   </div>
 
-  <div class="grid-wrapper">
-    <!-- The whole axis+grid is one block. We use a CSS grid to position things precisely. -->
-    <div style="display:grid; grid-template-columns: 20px 16px 1fr; grid-template-rows: 1fr 2px 24px; gap:0;">
+  <div style="flex:1; position:relative;">
+    <!--
+      Layout uses a single SVG drawn on top of everything via position:absolute.
+      The grid sits inside a padded container so the lines align perfectly.
+      Padding: top=16px (arrow tip), left=36px (label+line), bottom=16px, right=0
+    -->
+    <div style="padding: 16px 0 40px 52px; position:relative;">
 
-      <!-- Row 1, Col 1: Potential label (centered vertically) -->
-      <div style="grid-column:1; grid-row:1; display:flex; align-items:center; justify-content:center;">
-        <span style="writing-mode:vertical-rl; transform:rotate(180deg); font-size:12px; font-weight:600; color:#666; white-space:nowrap;">Potential</span>
-      </div>
+      <!-- The 9-box grid -->
+      <div class="nine-grid" id="nine-grid"></div>
 
-      <!-- Row 1, Col 2: Up arrow + vertical line -->
-      <div style="grid-column:2; grid-row:1; display:flex; flex-direction:column; align-items:center;">
-        <!-- Up arrow -->
-        <div style="width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-bottom:10px solid #666;flex-shrink:0;"></div>
-        <!-- Vertical line filling remaining height -->
-        <div style="width:2px;background:#666;flex:1;"></div>
-      </div>
-
-      <!-- Row 1, Col 3: The 9-box grid -->
-      <div style="grid-column:3; grid-row:1;">
-        <div class="nine-grid" id="nine-grid"></div>
-      </div>
-
-      <!-- Row 2, Col 2+3: Horizontal line (starts exactly where vertical ends) -->
-      <div style="grid-column:2/4; grid-row:2; display:flex; align-items:center;">
-        <div style="width:2px;height:2px;background:#666;flex-shrink:0;"></div>
-        <div style="height:2px;background:#666;flex:1;"></div>
+      <!-- Single SVG overlay for the entire L-shaped axis -->
+      <svg id="axis-svg" style="position:absolute; top:0; left:0; width:100%; height:100%; overflow:visible; pointer-events:none;">
+        <!-- Up arrow at top of Y axis -->
+        <polygon id="arrow-up" points="26,16 20,28 32,28" fill="#666"/>
+        <!-- Vertical line from arrow down to corner -->
+        <line id="y-line" x1="26" y1="28" x2="26" y2="0" stroke="#666" stroke-width="2"/>
+        <!-- Horizontal line from corner to right edge -->
+        <line id="x-line" x1="26" y1="0" x2="100%" y2="0" stroke="#666" stroke-width="2"/>
         <!-- Right arrow -->
-        <div style="width:0;height:0;border-top:6px solid transparent;border-bottom:6px solid transparent;border-left:10px solid #666;flex-shrink:0;"></div>
-      </div>
+        <polygon id="arrow-right" points="0,0 0,0 0,0" fill="#666"/>
+      </svg>
 
-      <!-- Row 3, Col 3: Performance label -->
-      <div style="grid-column:3; grid-row:3; display:flex; align-items:center; justify-content:center; padding-top:4px;">
-        <span style="font-size:12px; font-weight:600; color:#666;">Performance</span>
-      </div>
-
+      <!-- Performance label centered below grid -->
+      <div style="text-align:center; font-size:12px; font-weight:600; color:#666; margin-top:8px;">Performance</div>
     </div>
+
+    <!-- Potential label centered on Y axis -->
+    <div id="potential-label" style="position:absolute; left:0; top:16px; writing-mode:vertical-rl; transform:rotate(180deg); font-size:12px; font-weight:600; color:#666; white-space:nowrap; display:flex; align-items:center; justify-content:center;"></div>
   </div>
 </div>
 
@@ -250,6 +239,44 @@ function renderGrid(){
     });
     grid.appendChild(box);
   });
+  positionAxis();
+}
+
+function positionAxis() {
+  const grid = document.getElementById("nine-grid");
+  const svg = document.getElementById("axis-svg");
+  const potLabel = document.getElementById("potential-label");
+  const rect = grid.getBoundingClientRect();
+  const svgRect = svg.getBoundingClientRect();
+
+  // Corner point = left edge of grid, bottom edge of grid (relative to SVG)
+  const cornerX = rect.left - svgRect.left;
+  const cornerY = rect.bottom - svgRect.top;
+  const topY = rect.top - svgRect.top;
+  const rightX = rect.right - svgRect.left;
+
+  const cx = 26; // fixed X for vertical line (left of grid)
+
+  // Arrow up
+  document.getElementById("arrow-up").setAttribute("points", `${cx},${topY-12} ${cx-6},${topY} ${cx+6},${topY}`);
+  // Y line: from just below arrow tip to corner
+  document.getElementById("y-line").setAttribute("x1", cx);
+  document.getElementById("y-line").setAttribute("y1", topY);
+  document.getElementById("y-line").setAttribute("x2", cx);
+  document.getElementById("y-line").setAttribute("y2", cornerY);
+  // X line: from corner to right of grid
+  document.getElementById("x-line").setAttribute("x1", cx);
+  document.getElementById("x-line").setAttribute("y1", cornerY);
+  document.getElementById("x-line").setAttribute("x2", rightX+12);
+  document.getElementById("x-line").setAttribute("y2", cornerY);
+  // Arrow right
+  document.getElementById("arrow-right").setAttribute("points", `${rightX+12},${cornerY-6} ${rightX+12},${cornerY+6} ${rightX+24},${cornerY}`);
+
+  // Position "Potential" label centered along Y axis
+  const midY = (topY + cornerY) / 2;
+  potLabel.style.top = "0";
+  potLabel.style.height = (cornerY + svgRect.top - rect.top + 16) + "px";
+  potLabel.textContent = "Potential";
 }
 
 function returnToSidebar(name){delete placements[name];saveState();render();}
@@ -283,6 +310,7 @@ document.getElementById("delete-modal").addEventListener("click",function(e){if(
 document.getElementById("reset-modal").addEventListener("click",function(e){if(e.target===this)closeResetModal();});
 
 loadState();render();
+window.addEventListener("resize", positionAxis);
 </script>
 </body>
 </html>
