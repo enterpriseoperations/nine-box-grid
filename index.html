@@ -157,84 +157,20 @@
   .grid-wrapper { flex: 1; display: flex; flex-direction: column; }
   .axis-row { display: flex; gap: 0; flex: 1; }
 
-  .y-axis {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-width: 28px;
-    padding: 0 6px;
-    gap: 6px;
-  }
-  .y-axis-line {
-    width: 2px;
-    flex: 1;
-    background: var(--text-muted);
-    position: relative;
-    max-height: 480px;
-  }
-  .y-axis-line::before {
-    content: '';
-    position: absolute;
-    top: -7px; left: 50%;
-    transform: translateX(-50%);
-    border-left: 5px solid transparent;
-    border-right: 5px solid transparent;
-    border-bottom: 8px solid var(--text-muted);
-  }
-  .y-axis-line::after {
-    content: '';
-    position: absolute;
-    bottom: -7px; left: 50%;
-    transform: translateX(-50%);
-    border-left: 5px solid transparent;
-    border-right: 5px solid transparent;
-    border-top: 8px solid var(--text-muted);
-  }
   .y-label {
     writing-mode: vertical-rl;
     transform: rotate(180deg);
     font-size: 12px; font-weight: 600;
     color: var(--text-muted);
     white-space: nowrap;
-  }
-
-  .x-axis {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 8px 0 0;
-  }
-  .x-axis-line {
-    height: 2px;
-    flex: 1;
-    background: var(--text-muted);
-    position: relative;
-  }
-  .x-axis-line::before {
-    content: '';
-    position: absolute;
-    left: -7px; top: 50%;
-    transform: translateY(-50%);
-    border-top: 5px solid transparent;
-    border-bottom: 5px solid transparent;
-    border-right: 8px solid var(--text-muted);
-  }
-  .x-axis-line::after {
-    content: '';
-    position: absolute;
-    right: -7px; top: 50%;
-    transform: translateY(-50%);
-    border-top: 5px solid transparent;
-    border-bottom: 5px solid transparent;
-    border-left: 8px solid var(--text-muted);
+    text-align: center;
   }
   .x-label {
     font-size: 12px; font-weight: 600;
     color: var(--text-muted);
     white-space: nowrap;
+    text-align: center;
   }
-
   .grid-col { flex: 1; display: flex; flex-direction: column; }
 
   .nine-grid {
@@ -318,14 +254,31 @@
 
   <div class="grid-wrapper">
     <div class="axis-row">
-      <div class="y-axis">
-        <div class="y-label">Leadership Potential</div>
-        <div class="y-axis-line"></div>
+      <div style="display:flex; flex-direction:column; align-items:center; padding-right:6px; flex-shrink:0;">
+        <div style="flex:1; display:flex; align-items:center; justify-content:center; position:relative;">
+          <svg width="24" height="590" style="overflow:visible; display:block;">
+            <defs>
+              <marker id="arrowUp" markerWidth="8" markerHeight="8" refX="4" refY="0" orient="auto">
+                <path d="M2,7 L4,0 L6,7" fill="none" stroke="#666" stroke-width="1.5"/>
+              </marker>
+            </defs>
+            <line x1="12" y1="580" x2="12" y2="10" stroke="#666" stroke-width="2" marker-end="url(#arrowUp)"/>
+            <line x1="12" y1="580" x2="600" y2="580" stroke="#666" stroke-width="2"/>
+          </svg>
+          <div class="y-label" style="position:absolute; left:50%; transform:translateX(-50%) rotate(180deg); writing-mode:vertical-rl; pointer-events:none;">Potential</div>
+        </div>
       </div>
       <div class="grid-col">
         <div class="nine-grid" id="nine-grid"></div>
-        <div class="x-axis">
-          <div class="x-axis-line"></div>
+        <div style="display:flex; flex-direction:column; align-items:center; padding-top:4px;">
+          <svg width="100%" height="24" style="overflow:visible; display:block;">
+            <defs>
+              <marker id="arrowRight" markerWidth="8" markerHeight="8" refX="8" refY="4" orient="auto">
+                <path d="M0,2 L7,4 L0,6" fill="none" stroke="#666" stroke-width="1.5"/>
+              </marker>
+            </defs>
+            <line x1="0" y1="12" x2="99%" y2="12" stroke="#666" stroke-width="2" marker-end="url(#arrowRight)"/>
+          </svg>
           <div class="x-label">Performance</div>
         </div>
       </div>
