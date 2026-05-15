@@ -15,7 +15,6 @@
     --brand-blue:   #6F7F95;
     --brand-coral:  #E0836B;
     --brand-brown:  #A16449;
-    --chip-colors: #652E63, #E87722, #A8AD00, #6F7F95, #E0836B, #A16449;
     --bg: #f4f2ef;
     --surface: #ffffff;
     --text: #1a1a1a;
@@ -23,35 +22,15 @@
     --border: rgba(0,0,0,0.1);
   }
 
-  body {
-    font-family: 'DM Sans', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    padding: 24px;
-  }
+  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding: 24px; }
 
-  header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 20px;
-  }
+  header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
+  header h1 { font-size: 20px; font-weight: 600; color: var(--brand-purple); letter-spacing: -0.02em; }
+  header p { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
 
-  header h1 {
-    font-size: 20px;
-    font-weight: 600;
-    color: var(--brand-purple);
-    letter-spacing: -0.02em;
-  }
+  .header-btns { display: flex; gap: 8px; }
 
-  header p {
-    font-size: 13px;
-    color: var(--text-muted);
-    margin-top: 2px;
-  }
-
-  .reset-btn {
+  .btn {
     font-family: 'DM Sans', sans-serif;
     font-size: 12px;
     padding: 6px 14px;
@@ -61,14 +40,17 @@
     color: var(--text-muted);
     cursor: pointer;
     transition: background 0.15s, color 0.15s;
+    white-space: nowrap;
   }
-  .reset-btn:hover { background: var(--brand-purple); color: #fff; border-color: var(--brand-purple); }
+  .btn:hover { background: var(--brand-purple); color: #fff; border-color: var(--brand-purple); }
+  .btn.primary { background: var(--brand-purple); color: #fff; border-color: var(--brand-purple); }
+  .btn.primary:hover { background: #4e2250; }
+  .btn.danger:hover { background: #c0392b; border-color: #c0392b; color: #fff; }
 
   .layout { display: flex; gap: 16px; align-items: flex-start; }
 
-  /* Sidebar */
   .sidebar {
-    width: 170px;
+    width: 175px;
     flex-shrink: 0;
     background: var(--surface);
     border: 1px solid var(--border);
@@ -78,18 +60,38 @@
     top: 24px;
   }
 
-  .sidebar-title {
-    font-size: 10px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--text-muted);
-    margin-bottom: 10px;
-    padding-bottom: 8px;
-    border-bottom: 1px solid var(--border);
-  }
+  .sidebar-title { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
 
-  #sidebar-chips { display: flex; flex-direction: column; gap: 5px; }
+  .add-employee { display: flex; gap: 5px; margin-bottom: 10px; }
+  .add-employee input {
+    flex: 1;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    padding: 5px 8px;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    background: var(--bg);
+    color: var(--text);
+    outline: none;
+    min-width: 0;
+  }
+  .add-employee input:focus { border-color: var(--brand-purple); }
+  .add-btn {
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    background: var(--brand-purple);
+    color: #fff;
+    border: none;
+    font-size: 18px;
+    line-height: 1;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    transition: background 0.15s;
+  }
+  .add-btn:hover { background: #4e2250; }
+
+  #sidebar-chips { display: flex; flex-direction: column; gap: 5px; max-height: 460px; overflow-y: auto; }
 
   .unplace-zone {
     margin-top: 10px;
@@ -103,7 +105,6 @@
   }
   .unplace-zone.drag-over { border-color: var(--brand-purple); background: #f9f2f9; }
 
-  /* Chip */
   .chip {
     display: flex;
     align-items: center;
@@ -111,16 +112,35 @@
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 20px;
-    padding: 3px 8px 3px 3px;
+    padding: 3px 4px 3px 3px;
     cursor: grab;
     user-select: none;
     font-size: 11px;
     color: var(--text);
     transition: box-shadow 0.15s, transform 0.1s;
+    position: relative;
   }
   .chip:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.12); transform: translateY(-1px); }
   .chip:active { cursor: grabbing; }
-  .chip.dragging { opacity: 0.35; transform: scale(0.96); }
+  .chip.dragging { opacity: 0.35; }
+
+  .chip-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+  .delete-btn {
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    background: transparent;
+    border: none;
+    color: #999;
+    font-size: 14px;
+    line-height: 1;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    padding: 0;
+    transition: color 0.15s, background 0.15s;
+  }
+  .delete-btn:hover { color: #c0392b; background: #fde8e8; }
 
   .avatar {
     width: 24px; height: 24px;
@@ -134,21 +154,16 @@
   }
   .avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
 
-  /* Grid wrapper */
   .grid-wrapper { flex: 1; display: flex; flex-direction: column; }
-
   .axis-row { display: flex; gap: 0; flex: 1; }
 
   .y-label {
     writing-mode: vertical-rl;
     transform: rotate(180deg);
-    font-size: 12px;
-    font-weight: 600;
+    font-size: 12px; font-weight: 600;
     color: var(--text-muted);
     display: flex; align-items: center; justify-content: center;
-    padding: 0 6px;
-    min-width: 28px;
-    letter-spacing: 0.02em;
+    padding: 0 6px; min-width: 28px;
   }
 
   .grid-col { flex: 1; display: flex; flex-direction: column; }
@@ -165,62 +180,48 @@
   .box {
     border-radius: 8px;
     padding: 10px 8px 8px;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
+    display: flex; flex-direction: column; gap: 6px;
     transition: outline 0.12s;
     min-height: 185px;
-    position: relative;
   }
   .box.drag-over { outline: 2px dashed rgba(101,46,99,0.6); outline-offset: -2px; }
 
-  .box-label {
-    font-size: 10px;
-    font-weight: 600;
-    line-height: 1.4;
-    text-align: center;
-    padding-bottom: 6px;
-    border-bottom: 1px solid rgba(0,0,0,0.08);
-    margin-bottom: 2px;
-  }
-
+  .box-label { font-size: 10px; font-weight: 600; line-height: 1.4; text-align: center; padding-bottom: 6px; border-bottom: 1px solid rgba(0,0,0,0.08); margin-bottom: 2px; }
   .box-chips { display: flex; flex-wrap: wrap; gap: 3px; flex: 1; align-content: flex-start; }
 
-  .box .chip { font-size: 10px; padding: 2px 6px 2px 2px; border-color: rgba(0,0,0,0.1); }
+  .box .chip { font-size: 10px; padding: 2px 4px 2px 2px; border-color: rgba(0,0,0,0.1); }
   .box .chip .avatar { width: 20px; height: 20px; font-size: 7px; }
-  .box .chip:hover { box-shadow: 0 2px 6px rgba(0,0,0,0.15); }
+  .box .chip .delete-btn { width: 14px; height: 14px; font-size: 12px; }
 
-  .x-label {
-    text-align: center;
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--text-muted);
-    padding: 10px 0 0;
-    letter-spacing: 0.02em;
-  }
+  .x-label { text-align: center; font-size: 12px; font-weight: 600; color: var(--text-muted); padding: 10px 0 0; }
 
-  /* Box colors — matching original */
-  .box-0 { background: #f5e6c8; }  /* High / Poor */
-  .box-1 { background: #f2c4c4; }  /* High / Good */
-  .box-2 { background: #c97a7a; }  /* High / Outstanding */
-  .box-3 { background: #b8d4b0; }  /* Mod / Poor */
-  .box-4 { background: #f5e6c8; }  /* Mod / Good */
-  .box-5 { background: #c97a7a; }  /* Mod / Outstanding */
-  .box-6 { background: #6f9e8a; }  /* Lim / Poor */
-  .box-7 { background: #b8d4b0; }  /* Lim / Good */
-  .box-8 { background: #f5e6c8; }  /* Lim / Outstanding */
+  .box-0 { background: #f5e6c8; } .box-1 { background: #f2c4c4; } .box-2 { background: #c97a7a; }
+  .box-3 { background: #b8d4b0; } .box-4 { background: #f5e6c8; } .box-5 { background: #c97a7a; }
+  .box-6 { background: #6f9e8a; } .box-7 { background: #b8d4b0; } .box-8 { background: #f5e6c8; }
 
   .box-0 .box-label, .box-1 .box-label, .box-3 .box-label, .box-4 .box-label,
   .box-7 .box-label, .box-8 .box-label { color: #4a3010; }
   .box-2 .box-label, .box-5 .box-label, .box-6 .box-label { color: #fff; }
 
-  /* Tooltip for double-click hint */
-  .hint {
-    font-size: 10px;
-    color: var(--text-muted);
-    text-align: center;
-    margin-top: 6px;
+  /* Modal */
+  .modal-bg {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.4);
+    z-index: 100;
+    align-items: center; justify-content: center;
   }
+  .modal-bg.open { display: flex; }
+  .modal {
+    background: var(--surface);
+    border-radius: 12px;
+    padding: 24px;
+    width: 320px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+  }
+  .modal h2 { font-size: 16px; font-weight: 600; margin-bottom: 6px; color: var(--brand-purple); }
+  .modal p { font-size: 13px; color: var(--text-muted); margin-bottom: 16px; }
+  .modal-btns { display: flex; gap: 8px; justify-content: flex-end; }
 </style>
 </head>
 <body>
@@ -228,14 +229,20 @@
 <header>
   <div>
     <h1>9-Box Leadership Grid</h1>
-    <p>Drag employees into boxes &nbsp;·&nbsp; Double-click to return to sidebar</p>
+    <p>Drag employees into boxes &nbsp;·&nbsp; Double-click a placed chip to return to sidebar</p>
   </div>
-  <button class="reset-btn" onclick="resetAll()">↺ Reset all</button>
+  <div class="header-btns">
+    <button class="btn" onclick="confirmReset()">↺ Reset placements</button>
+  </div>
 </header>
 
 <div class="layout">
   <div class="sidebar">
     <div class="sidebar-title">Employees</div>
+    <div class="add-employee">
+      <input type="text" id="new-name" placeholder="First Last" onkeydown="if(event.key==='Enter')addEmployee()" />
+      <button class="add-btn" onclick="addEmployee()" title="Add employee">+</button>
+    </div>
     <div id="sidebar-chips"></div>
     <div class="unplace-zone" id="unplace-zone">↩ drag here to unplace</div>
   </div>
@@ -251,8 +258,32 @@
   </div>
 </div>
 
+<!-- Confirm delete modal -->
+<div class="modal-bg" id="delete-modal">
+  <div class="modal">
+    <h2>Remove employee?</h2>
+    <p id="delete-msg">This will permanently remove them from the grid.</p>
+    <div class="modal-btns">
+      <button class="btn" onclick="closeDeleteModal()">Cancel</button>
+      <button class="btn danger" id="confirm-delete-btn">Remove</button>
+    </div>
+  </div>
+</div>
+
+<!-- Confirm reset modal -->
+<div class="modal-bg" id="reset-modal">
+  <div class="modal">
+    <h2>Reset placements?</h2>
+    <p>This will move everyone back to the sidebar but keep your employee list.</p>
+    <div class="modal-btns">
+      <button class="btn" onclick="closeResetModal()">Cancel</button>
+      <button class="btn danger" onclick="doReset()">Reset</button>
+    </div>
+  </div>
+</div>
+
 <script>
-const employees = [
+const DEFAULT_EMPLOYEES = [
   "Twylla Dillion","Brenda Reyes","Janessa Mondestin","Stephanie Garcia",
   "Tiwani Oseni","Amaya Woodley","Earl McFarland","Jessica Lumpkin",
   "Rebecca Lesperance","Mariana Anguiano Orta","Shontei Hampton",
@@ -260,35 +291,59 @@ const employees = [
   "Breana Turner","Valentina Lara-Sanchez"
 ];
 
-const chipColors = ["#652E63","#E87722","#A8AD00","#6F7F95","#E0836B","#A16449"];
+const CHIP_COLORS = ["#652E63","#E87722","#A8AD00","#6F7F95","#E0836B","#A16449"];
 
-const boxes = [
-  { label: "High Potential · Poor Performance" },
-  { label: "High Potential · Good Performance" },
-  { label: "High Potential · Outstanding Performance" },
-  { label: "Moderate Potential · Poor Performance" },
-  { label: "Moderate Potential · Good Performance" },
-  { label: "Moderate Potential · Outstanding Performance" },
-  { label: "Limited Potential · Poor Performance" },
-  { label: "Limited Potential · Good Performance" },
-  { label: "Limited Potential · Outstanding Performance" },
+const BOX_LABELS = [
+  "High Potential · Poor Performance",
+  "High Potential · Good Performance",
+  "High Potential · Outstanding Performance",
+  "Moderate Potential · Poor Performance",
+  "Moderate Potential · Good Performance",
+  "Moderate Potential · Outstanding Performance",
+  "Limited Potential · Poor Performance",
+  "Limited Potential · Good Performance",
+  "Limited Potential · Outstanding Performance",
 ];
 
-// Photo map — add photo URLs here: { "First Last": "https://..." }
 const photos = {};
+
+// State
+let employees = [];
+let placements = {}; // name -> boxIndex or 'sidebar'
+
+function loadState() {
+  try {
+    const saved = localStorage.getItem('ninebox_state');
+    if (saved) {
+      const s = JSON.parse(saved);
+      employees = s.employees || [...DEFAULT_EMPLOYEES];
+      placements = s.placements || {};
+    } else {
+      employees = [...DEFAULT_EMPLOYEES];
+      placements = {};
+    }
+  } catch(e) {
+    employees = [...DEFAULT_EMPLOYEES];
+    placements = {};
+  }
+}
+
+function saveState() {
+  localStorage.setItem('ninebox_state', JSON.stringify({ employees, placements }));
+}
 
 function initials(name) {
   const p = name.trim().split(" ");
-  return (p[0][0] + p[p.length-1][0]).toUpperCase();
+  return (p[0][0] + (p[p.length-1]?.[0] || p[0][1] || '')).toUpperCase();
 }
 
 function colorFor(name) {
   let h = 0;
   for (let c of name) h = (h * 31 + c.charCodeAt(0)) & 0xffff;
-  return chipColors[h % chipColors.length];
+  return CHIP_COLORS[h % CHIP_COLORS.length];
 }
 
-function makeChip(name, full) {
+function makeChip(name, inSidebar) {
   const chip = document.createElement("div");
   chip.className = "chip";
   chip.draggable = true;
@@ -297,22 +352,28 @@ function makeChip(name, full) {
   const av = document.createElement("div");
   av.className = "avatar";
   av.style.background = colorFor(name);
-
   if (photos[name]) {
     const img = document.createElement("img");
-    img.src = photos[name];
-    img.alt = name;
+    img.src = photos[name]; img.alt = name;
     av.appendChild(img);
   } else {
     av.textContent = initials(name);
   }
 
   const nm = document.createElement("span");
-  nm.textContent = full ? name : name.split(" ")[0];
+  nm.className = "chip-name";
+  nm.textContent = inSidebar ? name : name.split(" ")[0];
   nm.title = name;
+
+  const del = document.createElement("button");
+  del.className = "delete-btn";
+  del.title = "Remove " + name;
+  del.innerHTML = "×";
+  del.onclick = (e) => { e.stopPropagation(); openDeleteModal(name); };
 
   chip.appendChild(av);
   chip.appendChild(nm);
+  chip.appendChild(del);
 
   chip.addEventListener("dragstart", e => {
     e.dataTransfer.setData("text/plain", name);
@@ -322,43 +383,39 @@ function makeChip(name, full) {
   return chip;
 }
 
-function removeChipEverywhere(name) {
-  document.querySelectorAll(`.chip[data-name="${CSS.escape(name)}"]`).forEach(c => c.remove());
+function render() {
+  renderSidebar();
+  renderGrid();
 }
 
-function returnToSidebar(name) {
-  removeChipEverywhere(name);
-  document.getElementById("sidebar-chips").appendChild(makeChip(name, true));
-}
-
-function placeInBox(name, chipsEl) {
-  removeChipEverywhere(name);
-  const chip = makeChip(name, false);
-  chip.addEventListener("dblclick", () => returnToSidebar(name));
-  chipsEl.appendChild(chip);
-}
-
-function buildSidebar() {
+function renderSidebar() {
   const c = document.getElementById("sidebar-chips");
   c.innerHTML = "";
-  employees.forEach(name => c.appendChild(makeChip(name, true)));
+  const sidebarPeople = employees.filter(n => !placements[n] && placements[n] !== 0);
+  sidebarPeople.forEach(name => c.appendChild(makeChip(name, true)));
 }
 
-function buildGrid() {
+function renderGrid() {
   const grid = document.getElementById("nine-grid");
   grid.innerHTML = "";
-  boxes.forEach((b, i) => {
+  BOX_LABELS.forEach((label, i) => {
     const box = document.createElement("div");
     box.className = `box box-${i}`;
 
-    const label = document.createElement("div");
-    label.className = "box-label";
-    label.textContent = b.label;
+    const lbl = document.createElement("div");
+    lbl.className = "box-label";
+    lbl.textContent = label;
 
     const chips = document.createElement("div");
     chips.className = "box-chips";
 
-    box.appendChild(label);
+    employees.filter(n => placements[n] === i).forEach(name => {
+      const chip = makeChip(name, false);
+      chip.addEventListener("dblclick", () => { returnToSidebar(name); });
+      chips.appendChild(chip);
+    });
+
+    box.appendChild(lbl);
     box.appendChild(chips);
 
     box.addEventListener("dragover", e => { e.preventDefault(); box.classList.add("drag-over"); });
@@ -366,29 +423,90 @@ function buildGrid() {
     box.addEventListener("drop", e => {
       e.preventDefault();
       box.classList.remove("drag-over");
-      placeInBox(e.dataTransfer.getData("text/plain"), chips);
+      const name = e.dataTransfer.getData("text/plain");
+      if (employees.includes(name)) {
+        placements[name] = i;
+        saveState();
+        render();
+      }
     });
 
     grid.appendChild(box);
   });
 }
 
-function resetAll() {
-  buildGrid();
-  buildSidebar();
+function returnToSidebar(name) {
+  delete placements[name];
+  saveState();
+  render();
 }
 
+function addEmployee() {
+  const input = document.getElementById("new-name");
+  const name = input.value.trim();
+  if (!name || employees.includes(name)) { input.value = ""; return; }
+  employees.push(name);
+  saveState();
+  render();
+  input.value = "";
+  input.focus();
+}
+
+let pendingDelete = null;
+
+function openDeleteModal(name) {
+  pendingDelete = name;
+  document.getElementById("delete-msg").textContent = `This will permanently remove "${name}" from the grid.`;
+  document.getElementById("confirm-delete-btn").onclick = () => doDelete();
+  document.getElementById("delete-modal").classList.add("open");
+}
+
+function closeDeleteModal() {
+  pendingDelete = null;
+  document.getElementById("delete-modal").classList.remove("open");
+}
+
+function doDelete() {
+  if (!pendingDelete) return;
+  employees = employees.filter(n => n !== pendingDelete);
+  delete placements[pendingDelete];
+  saveState();
+  render();
+  closeDeleteModal();
+}
+
+function confirmReset() {
+  document.getElementById("reset-modal").classList.add("open");
+}
+
+function closeResetModal() {
+  document.getElementById("reset-modal").classList.remove("open");
+}
+
+function doReset() {
+  placements = {};
+  saveState();
+  render();
+  closeResetModal();
+}
+
+// Unplace zone
 const unplace = document.getElementById("unplace-zone");
 unplace.addEventListener("dragover", e => { e.preventDefault(); unplace.classList.add("drag-over"); });
 unplace.addEventListener("dragleave", () => unplace.classList.remove("drag-over"));
 unplace.addEventListener("drop", e => {
   e.preventDefault();
   unplace.classList.remove("drag-over");
-  returnToSidebar(e.dataTransfer.getData("text/plain"));
+  const name = e.dataTransfer.getData("text/plain");
+  returnToSidebar(name);
 });
 
-buildGrid();
-buildSidebar();
+// Close modals on bg click
+document.getElementById("delete-modal").addEventListener("click", function(e) { if(e.target===this) closeDeleteModal(); });
+document.getElementById("reset-modal").addEventListener("click", function(e) { if(e.target===this) closeResetModal(); });
+
+loadState();
+render();
 </script>
 </body>
 </html>
